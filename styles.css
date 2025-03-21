@@ -1,0 +1,132 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --background-color: #ecf0f1;
+    --text-color: #333;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover:not(:disabled) {
+    background-color: #2980b9;
+  }
+  
+  button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+  }
+  
+  main {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+  }
+  
+  #notSupported {
+    background-color: var(--error-color);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  #log {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px;
+    height: 100px;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    width: 100%;
+    min-width: 770px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+  }
+  
+  #log > div {
+    margin: 2px 0;
+    white-space: pre;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    color: var(--primary-color);
+    margin: 0 0 20px 0;
+    font-size: 24px;
+  }
+  
+  #instructions {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  
+  #instructions ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  
+  #instructions li {
+    margin-bottom: 0px;
+  }
+  
+  #chartContainer {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    margin-top: 20px;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  #dataFormatLink {
+    color: var(--secondary-color);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  #dataFormatText {
+    display: none; /* Hidden by default */
+    font-family: 'Courier New', monospace;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ideaboard Serial Monitor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="index.js" defer></script>
+    <link rel="stylesheet" href="styles.css" /> <!-- Link to external CSS -->
+  </head>
+  <body>
+    <main>
+      <h1>CRCibernetica Ideaboard Serial Monitor</h1>
+      <div id="instructions">
+        <ol>
+          <li>Plug the Ideaboard into a USB port.</li>
+          <li>Click Connect to select the serial port.</li>
+          <li>Click Start to begin monitoring the serial output. <span id="dataFormatLink">Data Format</span>
+              <div id="dataFormatText">
+                <tag1>:<value1>,<tag2>:<value2><br>
+                eg. sensor1:541,sensor2:875,sensor3:357<br>
+                The name of the tag can be any valid Python variable name.<br>
+                Up to six values can be graphed at once.
+              </div>
+          </li>
+        </ol>
+      </div>
+      <header>
+        <button id="butConnect">Connect</button>
+        <button id="butStart" disabled>Start</button>
+        <button id="butReset" disabled>Reset Data</button>
+      </header>
+      <div id="notSupported">
+        Sorry, Web Serial is not supported. Use Chrome 89 or later.
+      </div>
+      <div id="log"></div>
+      <div id="chartContainer">
+        <canvas id="sensorChart"></canvas>
+      </div>
+    </main>
+  </body>
+</html>
