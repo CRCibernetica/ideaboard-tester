@@ -62,42 +62,13 @@ function initializeChart() {
     console.log('Chart initialized:', chart);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    butConnect.addEventListener("click", clickConnect);
-    butStart.addEventListener("click", clickStart);
-    butReset.addEventListener("click", resetChartData);
-
-    // Add toggle for Data Format link
-    const dataFormatLink = document.getElementById("dataFormatLink");
-    const dataFormatText = document.getElementById("dataFormatText");
-    dataFormatLink.addEventListener("click", () => {
-        if (dataFormatText.style.display === "none" || dataFormatText.style.display === "") {
-            dataFormatText.style.display = "block";
-        } else {
-            dataFormatText.style.display = "none";
-        }
-    });
-
-    initializeChart();
-
-    if ("serial" in navigator) {
-        document.getElementById("notSupported").style.display = "none";
-    } else {
-        console.warn('Web Serial API not supported');
-    }
-
-    logLine("Ideaboard Serial Monitor loaded.");
-});
-
-// Rest of your index.js remains unchanged...
-
 function cleanSerialOutput(text) {
     console.log('Raw buffer:', text);
-    text = text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')
+    text = text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '') // Remove ANSI escape codes
                .replace(/\x1B\]0;.*?\x07/g, '')
                .replace(/\x1B\]0;.*?\x5C/g, '')
                .replace(/\x1B\]0;.*?[\x07\x5C]/g, '');
-    text = text.replace(/[\x00-\x09\x0B-\x1F\x7F-\x9F]/g, '');
+    text = text.replace(/[\x00-\x09\x0B-\x1F\x7F-\x9F]/g, ''); // Remove control characters
     return text.replace(/\r\n/g, '\n').replace(/\r/g, '').trim();
 }
 
@@ -180,22 +151,6 @@ function resetChartData() {
     logLine("Chart data reset.");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    butConnect.addEventListener("click", clickConnect);
-    butStart.addEventListener("click", clickStart);
-    butReset.addEventListener("click", resetChartData);
-
-    initializeChart();
-
-    if ("serial" in navigator) {
-        document.getElementById("notSupported").style.display = "none";
-    } else {
-        console.warn('Web Serial API not supported');
-    }
-
-    logLine("Ideaboard Serial Monitor loaded.");
-});
-
 function logLine(text) {
     const line = document.createElement("div");
     line.textContent = text;
@@ -216,7 +171,11 @@ async function clickConnect() {
             await stopMonitoring();
         }
         try {
-            await port.close();
+            // Only close the port if it's still open
+            if (port.readable || port.writable) {
+                console.log('Closing port...', port.readable, port.writable);
+                await port.close();
+            }
             port = null;
             toggleUI(false);
             logLine("Disconnected from serial port.");
@@ -257,7 +216,6 @@ async function clickStart() {
         butStart.style.backgroundColor = "#e74c3c";
 
         buffer = "";
-
         const decoder = new TextDecoder();
         reader = port.readable.getReader();
 
@@ -267,7 +225,7 @@ async function clickStart() {
                 logLine("Serial stream ended.");
                 break;
             }
-            
+
             if (!value) continue;
 
             const text = decoder.decode(value);
@@ -303,34 +261,21 @@ async function stopMonitoring() {
     butStart.textContent = "Start";
     butStart.style.backgroundColor = "";
 
-    try {
-        if (reader) {
-            try {
-                await reader.cancel();
-            } catch (e) {
-                console.warn('Failed to cancel reader:', e.message);
-            }
-            try {
-                if (typeof reader.releaseLock === 'function') {
-                    reader.releaseLock();
-                }
-            } catch (e) {
-                console.warn('Failed to release lock:', e.message);
-            }
-            reader = null;
+    if (reader) {
+        await reader.cancel().catch(e => console.warn('Failed to cancel reader:', e.message));
+        // Check if reader still exists and has releaseLock before calling it
+        if (reader && typeof reader.releaseLock === 'function') {
+            reader.releaseLock();
         }
-
-        if (port && port.readable) {
-            try {
-                await port.close();
-            } catch (e) {
-                console.warn('Failed to close port:', e.message);
-            }
-        }
-        logLine("Stopped monitoring serial port.");
-    } catch (e) {
-        logError(`Failed to stop monitoring: ${e.message}`);
+        reader = null;
     }
+
+    if (port && (port.readable || port.writable)) {
+        console.log('Closing port in stopMonitoring...', port.readable, port.writable);
+        await port.close().catch(e => console.warn('Failed to close port:', e.message));
+    }
+
+    logLine("Stopped monitoring serial port.");
 }
 
 function toggleUI(connected) {
@@ -338,3 +283,30 @@ function toggleUI(connected) {
     butStart.disabled = !connected;
     butReset.disabled = !connected;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    butConnect.addEventListener("click", clickConnect);
+    butStart.addEventListener("click", clickStart);
+    butReset.addEventListener("click", resetChartData);
+
+    // Add toggle for Data Format link
+    const dataFormatLink = document.getElementById("dataFormatLink");
+    const dataFormatText = document.getElementById("dataFormatText");
+    dataFormatLink.addEventListener("click", () => {
+        if (dataFormatText.style.display === "none" || dataFormatText.style.display === "") {
+            dataFormatText.style.display = "block";
+        } else {
+            dataFormatText.style.display = "none";
+        }
+    });
+
+    initializeChart();
+
+    if ("serial" in navigator) {
+        document.getElementById("notSupported").style.display = "none";
+    } else {
+        console.warn('Web Serial API not supported');
+    }
+
+    logLine("Ideaboard Serial Monitor loaded.");
+});
